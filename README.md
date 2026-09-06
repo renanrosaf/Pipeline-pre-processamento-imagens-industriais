@@ -52,19 +52,20 @@ cd nome-do-repositorio
 Baixe o dataset do Kaggle (Casting Product Image Data) e coloque as imagens na pasta raw_images/.
 
 3. Execute o script:
-
+```python
 Bash
 python main.py
+```
 
-O script irá:
+## 🔧 Funcionamento do Script:
 
-Ler todas as imagens (.jpg, .png, etc.) de raw_images/;
+1. Ler todas as imagens (.jpg, .png, etc.) de raw_images/;
 
-Processar cada uma conforme o pipeline;
+2.  Processar cada uma conforme o pipeline;
 
-Salvar os resultados em processed_images/ com o prefixo processed_.
+3. Salvar os resultados em processed_images/ com o prefixo processed_.
 
-Verifique a saída na pasta processed_images/.
+4. Verifique a saída na pasta processed_images/.
 
 ## 📹 Vídeo de Apresentação
 🔗 [link do vídeo aqui]
