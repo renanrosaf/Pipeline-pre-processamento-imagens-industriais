@@ -1,4 +1,3 @@
-Markdown
 # 🏭 Pipeline de Pré-processamento de Imagens Industriais (Visão Computacional)
 
 ## 📖 Sobre o Projeto
