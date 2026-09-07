@@ -1,3 +1,5 @@
 .venv
-data\raw_images
-output\processed
+data\raw_images\def_front
+data\raw_images\ok_front
+output\processed\def_front
+output\processed\ok_front
