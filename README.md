@@ -1,4 +1,3 @@
-markdown
 # 🏭 Pipeline de Pré-processamento de Imagens Industriais
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
