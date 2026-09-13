@@ -245,3 +245,4 @@ Dataset de terceiros: [Kaggle — Casting Product Image Data](https://www.kaggle
 ---
 
 *Última atualização: setembro de 2026*
+
