@@ -217,7 +217,7 @@ Commits seguem o padrão **Conventional Commits** (`feat:`, `fix:`, `docs:`, `re
 
 ## 📹 Vídeo de Apresentação
 
-🔗 **[Inserir link do vídeo no Google Drive — modo leitor para qualquer pessoa com o link]**
+🔗 https://drive.google.com/file/d/1Wp_QKLczvISFCpdaOH5bKykMFTfCeAUj/view?usp=sharing
 
 O vídeo aborda:
 
