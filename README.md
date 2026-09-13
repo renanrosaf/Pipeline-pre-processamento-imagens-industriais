@@ -1,87 +1,247 @@
-# 🏭 Pipeline de Pré-processamento de Imagens Industriais (Visão Computacional)
+# 🏭 Pipeline de Pré-processamento de Imagens Industriais
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
+![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?style=flat-square&logo=opencv)
+![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange?style=flat-square&logo=jupyter)
+![License](https://img.shields.io/badge/License-Educacional-lightgrey?style=flat-square)
 
 ## 📖 Sobre o Projeto
-Este projeto foi desenvolvido como parte do Mini-Projeto Avaliativo do Módulo 2 (Machine Learning e Visão Computacional). 
 
-O objetivo principal não é classificar se uma peça possui defeito, mas sim atuar como um Analista de Visão Computacional Júnior, desenvolvendo um *pipeline* em Python utilizando a biblioteca OpenCV. O script realiza o pré-processamento em lote de imagens reais de peças de fundição (metálicas), destacando ranhuras e defeitos estruturais. Isso padroniza e "limpa" os dados para que, futuramente, a equipe de Machine Learning possa treinar um modelo preditivo eficiente.
+Este projeto foi desenvolvido como parte do **Mini-Projeto Avaliativo — Módulo 2 (Semana 07)** da disciplina de **Machine Learning e Visão Computacional**.
+
+O objetivo **não é classificar** se uma peça possui defeito, mas sim atuar como **Analista de Visão Computacional Júnior**, construindo um *pipeline* em Python com a biblioteca **OpenCV** para realizar o pré-processamento em lote de imagens reais de peças de fundição metálicas.
+
+O pipeline destaca **ranhuras estruturais e possíveis falhas** nas peças, padronizando e "limpando" os dados para que, futuramente, a equipe de Machine Learning possa treinar um modelo preditivo eficiente.
+
+---
 
 ## 📊 Dataset Utilizado
-Utilizou-se o dataset público **Casting Product Image Data for Quality Inspection**.
+
+- **Nome:** Casting Product Image Data for Quality Inspection
 - **Fonte:** [Kaggle](https://www.kaggle.com/datasets/ravirajsinh45/real-life-industrial-dataset-of-casting-product)
-- O dataset contém imagens reais de peças de fundição com e sem defeitos.
+- **Descrição:** Imagens reais de peças de fundição classificadas em duas categorias:
+  - `ok_front` → peças sem defeito
+  - `def_front` → peças com defeito
 
-## 📝 Divisão das Tarefas
-- **Sprint 1 - Configuração e Versionamento:** Inicializa um repositório Git, cria uma branch development, configura o ambiente virtual Python e faz o download do dataset sugerido.
-- **Sprint 2 - Estruturação de Dados e Leitura:** Cria uma estrutura de pastas (`/raw_images` e `/processed_images`). Desenvolve a lógica para ler múltiplas imagens do diretório de entrada em lote (batch).
-- **Sprint 3 - Pipeline de Pré-processamento Base:** Implementa conversão para escala de cinza (Grayscale) e aplicação de filtro para redução de ruído (ex: Gaussian Blur ou Median Blur).
-- **Sprint 4 - Segmentação e Destaque de Características:** Aplica técnicas de limiarização (Thresholding, como o método de Otsu) e detecção de bordas (ex: Canny ou Sobel) para destacar os contornos da peça e possíveis falhas.
-- **Sprint 5 - Refinamento Morfológico e Padronização:** Utiliza operações morfológicas (Erosão/Dilatação) para remover ruídos da segmentação e redimensionar (Resize) todas as imagens para um tamanho padrão (ex: 256x256 pixels).
-- **Sprint 6 - Gravação e Documentação:** Salva as imagens processadas no diretório de saída, consolida a branch no GitHub, escreve o readme.md e grava o vídeo de apresentação.
+---
 
-## ⚙️ Funcionalidades e Pipeline (Resumo)
-O desenvolvimento seguiu uma ordem lógica de Sprints, aplicando as seguintes técnicas em cada imagem do lote:
+## 🗂️ Estrutura do Repositório
 
-1. **Leitura em Lote (Batch):** Carregamento autônomo das imagens da pasta de entrada.
-2. **Grayscale:** Conversão do espaço de cor (RGB para escala de cinza).
-3. **Suavização (Blur):** Aplicação de filtros para atenuação e redução de ruídos (ex: Gaussian Blur ou Median Blur).
-4. **Limiarização (Thresholding):** Binarização para isolar o objeto do fundo (ex: Método de Otsu).
-5. **Detecção de Bordas:** Algoritmos (Canny/Sobel) para destacar contornos e falhas.
-6. **Refinamento Morfológico:** Operações de Erosão e Dilatação para eliminar ruídos residuais.
-7. **Padronização:** Redimensionamento (Resize) de todas as imagens para o tamanho de 256x256 pixels.
-8. **Exportação:** Salvamento dos resultados na pasta de saída.
-
-## 📁 Estrutura do Diretório
-O projeto está organizado da seguinte forma:
 ```text
-├── /raw_images           # Pasta contendo as imagens originais do dataset
-├── /processed_images     # Pasta onde as imagens tratadas e padronizadas são salvas
-├── main.py               # Script principal do pipeline de visão computacional
-├── README.md             # Documentação do projeto
-└── requirements.txt      # Dependências do projeto (OpenCV, etc.)
+Pipeline-pre-processamento/
+│
+├── .venv/                          # Ambiente virtual Python
+├── data/
+│   └── raw_images/                 # Imagens originais do dataset
+│       ├── def_front/              # Peças com defeito
+│       └── ok_front/               # Peças sem defeito
+│
+├── output/
+│   └── processed_images/           # Imagens após o pipeline
+│       ├── def_front/              # Defeituosas processadas
+│       ├── ok_front/               # Sem defeito processadas
+│       └── test/                   # Testes com parâmetros individuais
+│
+├── pipeline_processamento.ipynb    # Notebook com o pipeline completo
+├── README.md                       # Este arquivo
+├── requirements.txt                # Dependências do projeto
+└── .gitignore                      # Arquivos ignorados pelo Git
 ```
+
+---
+
+## ⚙️ Pipeline de Pré-processamento
+
+Cada imagem passa por **8 etapas sequenciais**, implementadas como métodos privados da classe `pipeline_Processor`:
+
+| # | Etapa | Função OpenCV | Parâmetros | Sprint |
+|---|-------|---------------|------------|--------|
+| 1 | Leitura em lote | `cv2.imread` + `os.listdir` | — | Sprint 2 |
+| 2 | Grayscale | `cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)` | — | Sprint 3 |
+| 3 | Suavização (Blur) | `cv2.GaussianBlur` | kernel `(5, 5)`, σ = 0 | Sprint 3 |
+| 4 | Limiarização (Otsu) | `cv2.threshold(..., THRESH_OTSU)` | automático | Sprint 4 |
+| 5 | Morfologia | `cv2.morphologyEx` (OPEN + CLOSE) | kernel elíptico `(3, 3)` | Sprint 5 |
+| 6 | Máscara + Bitwise | `cv2.bitwise_and(blurred, mask)` | — | Sprint 5 |
+| 7 | Detecção de Bordas | `cv2.Canny` | 50 / 150 | Sprint 4 |
+| 8 | Resize + Salvamento | `cv2.resize` + `cv2.imwrite` | 256 × 256 px | Sprint 5/6 |
+
+### 🧠 Por que essa ordem?
+
+A ordem foi ajustada após testes empíricos para **evitar a destruição das bordas finas** geradas pelo Canny:
+
+1. A **morfologia** é aplicada sobre a **máscara binária** (resultado do Otsu), onde faz sentido remover ruídos e fechar buracos.
+2. A máscara refinada é usada em `cv2.bitwise_and` para **isolar a peça** do fundo.
+3. O **Canny** é aplicado sobre a **imagem mascarada**, preservando as **ranhuras internas** (anéis concêntricos) sem capturar ruído do fundo.
+4. Por fim, a imagem é **redimensionada** para 256 × 256, padronizando a entrada.
+
+> ⚠️ **Atenção:** aplicar morfologia *depois* do Canny destrói as bordas (linhas de 1 pixel são apagadas pela erosão). Por isso a ordem é crítica.
+
+---
 
 ## 🚀 Como Executar
-1. Clone o repositório:
 
-Bash
-git clone [https://github.com/seu-usuario/nome-do-repositorio.git](https://github.com/seu-usuario/nome-do-repositorio.git)
-cd nome-do-repositorio
+### 1️⃣ Clonar o repositório
 
-2. Prepare os dados:
-Baixe o dataset do Kaggle (Casting Product Image Data) e coloque as imagens na pasta raw_images/.
-
-3. Execute o script:
-```python
-Bash
-python main.py
+```bash
+git clone https://github.com/renanrosaf/Pipeline-pre-processamento.git
+cd Pipeline-pre-processamento
 ```
 
-## 🔧 Funcionamento do Script:
+### 2️⃣ Criar e ativar o ambiente virtual
 
-1. Ler todas as imagens (.jpg, .png, etc.) de raw_images/;
+**Windows:**
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
 
-2.  Processar cada uma conforme o pipeline;
+**Linux / macOS:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-3. Salvar os resultados em processed_images/ com o prefixo processed_.
+### 3️⃣ Instalar as dependências
 
-4. Verifique a saída na pasta processed_images/.
+```bash
+pip install -r requirements.txt
+```
+
+Ou manualmente:
+```bash
+pip install opencv-python numpy
+```
+
+### 4️⃣ Baixar o dataset
+
+Baixe o dataset do [Kaggle](https://www.kaggle.com/datasets/ravirajsinh45/real-life-industrial-dataset-of-casting-product) e organize as imagens em:
+
+```text
+data/raw_images/def_front/   # imagens com defeito
+data/raw_images/ok_front/    # imagens sem defeito
+```
+
+### 5️⃣ Executar o pipeline
+
+Abra o notebook `pipeline_processamento.ipynb` no Jupyter ou VSCode e execute todas as células:
+
+```bash
+jupyter notebook pipeline_processamento.ipynb
+```
+
+As imagens processadas serão salvas automaticamente em:
+
+```text
+output/processed_images/def_front/
+output/processed_images/ok_front/
+```
+
+---
+
+## 🧪 Testes com Imagem Única
+
+Antes de rodar o pipeline no lote inteiro, foram realizados testes individuais para **calibração dos parâmetros** (kernel do blur, limiares do Canny, tamanho do kernel morfológico). Esses testes estão salvos em:
+
+```text
+output/processed_images/test/
+```
+
+O método `process_single_image()` permite visualizar **todas as etapas** com `mostrar=True`:
+
+```python
+pipeline = pipeline_Processor()
+pipeline.process_single_image(
+    "data/raw_images/def_front/cast_def_0_9477.jpeg",
+    "output/processed_images/test/resultado.jpeg",
+    mostrar=True
+)
+```
+
+---
+
+## ⚡ Processamento Concorrente
+
+O processamento em lote utiliza `ThreadPoolExecutor` para paralelizar a leitura/escrita das imagens:
+
+```python
+pipeline.process_batch_concurrent(
+    "data/raw_images/def_front",
+    "output/processed_images/def_front"
+)
+```
+
+**Por que ThreadPool e não ProcessPool?**
+
+- ThreadPool **não exige pickling** de objetos, evitando erros de `ProcessPoolExecutor` no Windows (`"terminated abruptly"`).
+- O OpenCV **libera o GIL** em operações como `imread`, `cvtColor`, `GaussianBlur`, `Canny` e `resize`, permitindo paralelismo real.
+- Compatibilidade total com **Windows + VSCode + Jupyter**.
+
+---
+
+## 📝 Divisão das Tarefas (Sprints)
+
+| Sprint | Descrição | Status |
+|--------|-----------|--------|
+| **1** | Configuração do Git, branch `development`, ambiente virtual e download do dataset | ✅ |
+| **2** | Estruturação de pastas (`raw_images` / `processed_images`) e leitura em lote | ✅ |
+| **3** | Grayscale + Gaussian Blur | ✅ |
+| **4** | Threshold Otsu + Detecção de Bordas (Canny) | ✅ |
+| **5** | Morfologia + Resize (256×256) | ✅ |
+| **6** | Salvamento em lote, documentação (README) e vídeo de apresentação | ✅ |
+
+---
+
+## 🌿 Versionamento e Branches
+
+O desenvolvimento seguiu o modelo **Git Flow** simplificado:
+
+| Branch | Descrição |
+|--------|-----------|
+| `main` | Versão final estável entregue |
+| `development` | Branch de integração das funcionalidades |
+| `feature/sprint-N-*` | Branches específicas por sprint (ex: `feature/sprint3-preprocessing`) |
+
+Commits seguem o padrão **Conventional Commits** (`feat:`, `fix:`, `docs:`, `refactor:`).
+
+---
+
+## 🔮 Melhorias Futuras
+
+- [ ] Ajuste **dinâmico** dos limiares do Canny com base no histograma da imagem.
+- [ ] Suporte a **data augmentation** para treinamento posterior.
+- [ ] Substituição do `ThreadPoolExecutor` por `ProcessPoolExecutor` após diagnóstico do ambiente.
+- [ ] Implementação de **interface CLI** com `argparse` para escolher pastas de entrada/saída.
+- [ ] Exportação de relatório **CSV** com métricas de processamento (tempo, taxa de sucesso).
+
+---
 
 ## 📹 Vídeo de Apresentação
-🔗 [link do vídeo aqui]
+
+🔗 https://drive.google.com/file/d/1Wp_QKLczvISFCpdaOH5bKykMFTfCeAUj/view?usp=sharing
 
 O vídeo aborda:
 
-Objetivo do sistema e demonstração de funcionamento;
+1. Objetivo do sistema e demonstração de funcionamento;
+2. Passos para execução;
+3. Organização das tarefas antes do desenvolvimento;
+4. Estrutura de branches criadas;
+5. Pontos de melhoria identificados no código.
 
-Passos para execução;
+---
 
-Organização das tarefas antes do desenvolvimento;
+## 🏷️ Autor
 
-Estrutura de branches criadas;
+**Renan Rosa Ferreira**
 
-Pontos de melhoria identificados.
-
-
-## 🏷️ Autor: 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/renanrosaferreira/)
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/renanrosaf)
+
+## 📄 Licença
+
+Projeto desenvolvido para fins **educacionais**, sem fins comerciais.
+
+Dataset de terceiros: [Kaggle — Casting Product Image Data](https://www.kaggle.com/datasets/ravirajsinh45/real-life-industrial-dataset-of-casting-product).
+
+---
+
+*Última atualização: setembro de 2026*
